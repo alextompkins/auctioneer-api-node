@@ -1,11 +1,21 @@
 {
   "name": "SENG365-Auction-Site-API",
+  "description": "A simple auction site API.",
+  "homepage": "https://eng-git.canterbury.ac.nz/seng365-2018/ato47",
+  "keywords": [
+    "auction",
+    "application",
+    "api"
+  ],
+  "author": "Alex Tompkins <ato47@uclive.ac.nz>",
+  "main": "server.js",
   "version": "0.0.1",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "mysql": "^2.15.0",
+    "body-parser": "^1.17.2"
   }
 }
