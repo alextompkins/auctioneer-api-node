@@ -49,6 +49,41 @@ exports.view = function (id, done) {
         });
 };
 
-exports.change = function (id, changes, done) {
+function buildUpdateUserSQL(id, params) {
+    const PROPERTIES = [
+        "username", "password", "givenName", "familyName", "email"
+    ];
 
+    let changes = [];
+    for (let property of PROPERTIES) {
+        if (typeof params[property] !== "undefined") {
+            changes.push(property + " = '" + params[property] + "'");
+        }
+    }
+
+    if (changes.length === 0) {
+        return "";
+    } else {
+        return "UPDATE view_auction_user SET " + changes.join(', ') + " WHERE userId = " + id;
+    }
+}
+
+exports.change = function (id, changes, done) {
+    db.get_pool().getConnection()
+        .then(function () {
+            // TODO: Should an error be returned if an invaid property is given in the request?
+            // TODO: Should an error be returned if no valid properties are given?
+            let updateSQL = buildUpdateUserSQL(id, changes);
+            if (updateSQL !== "") {
+                return db.get_pool().query(updateSQL);
+            }
+        })
+        .then(function (result) {
+            // TODO: Should an error be returned if the given id does not exist?
+            return done({"status": 201, "statusMessage": "OK"});
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done({"status": 401, "statusMessage": "Unauthorized"});
+        });
 };
