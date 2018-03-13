@@ -7,10 +7,10 @@ module.exports = function (app) {
     app.route('/users/login')
         .post(users.login);
 
-    app.route('users/logout')
+    app.route('/users/logout')
         .post(users.logout);
 
-    app.route('users/:id')
+    app.route('/users/:id')
         .get(users.view)
         .patch(users.change);
 };

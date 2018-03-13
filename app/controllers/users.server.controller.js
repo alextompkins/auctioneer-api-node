@@ -16,6 +16,16 @@ exports.create = function (req, res) {
     });
 };
 
+exports.view = function (req, res) {
+    let id = req.params.id;
+
+    Users.view(id, function (result) {
+        res.statusMessage = result.statusMessage;
+        res.status(result.status)
+            .json(result.json);
+    });
+};
+
 exports.login = function (req, res) {
     Users.login(function (result) {
         res.statusMessage = result.statusMessage;
@@ -29,14 +39,6 @@ exports.logout = function (req, res) {
         res.statusMessage = result.statusMessage;
         res.status(result.status)
             .send(result.body);
-    });
-};
-
-exports.view = function (req, res) {
-    Users.view(function (result) {
-        res.statusMessage = result.statusMessage;
-        res.status(result.status)
-            .json(result.json);
     });
 };
 
