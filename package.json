@@ -14,8 +14,9 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "mysql": "^2.15.0",
-    "body-parser": "^1.17.2"
+    "mz": "^2.7.0"
   }
 }

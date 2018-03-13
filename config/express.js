@@ -8,6 +8,7 @@ module.exports = function() {
 
     // ROUTES //
     require('../app/routes/index.server.routes.js')(app);
+    require('../app/routes/reset.server.routes.js')(app);
 
     return app;
 };
