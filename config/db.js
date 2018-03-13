@@ -6,6 +6,7 @@ let state = {
 
 exports.connect = function(done) {
     state.pool = mysql.createPool({
+        multipleStatements: true,
         host: "HOST",
         user: "USERNAME",
         password: "PASSWORD",
