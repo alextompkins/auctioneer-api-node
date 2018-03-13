@@ -7,10 +7,10 @@ exports.resetDB = function(done) {
             return db.get_pool().query(sql);
         })
         .then(function () {
-            return done({"status": 200, "body": "OK"});
+            return done({"status": 200, "statusMessage": "OK"});
         })
         .catch(function (err) {
             console.log(err);
-            return done({"status": 400, "body": "Malformed request."});
+            return done({"status": 400, "statusMessage": "Malformed request."});
         });
 };

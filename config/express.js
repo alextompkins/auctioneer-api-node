@@ -10,6 +10,7 @@ module.exports = function() {
     require('../app/routes/index.server.routes.js')(app);
     require('../app/routes/reset.server.routes.js')(app);
     require('../app/routes/resample.server.routes.js')(app);
+    require('../app/routes/users.server.routes')(app);
 
     return app;
 };
