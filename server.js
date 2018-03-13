@@ -1,11 +1,7 @@
 const db = require('./config/db');
-const express = require('express');
+const express = require('./config/express');
 const app = express();
 const port = 4941;
-
-app.get('/', function (req, res) {
-    res.send({"message": "Hello World!"})
-});
 
 // Connect to MySQL on start-up
 db.connect(function (err) {

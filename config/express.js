@@ -7,7 +7,7 @@ module.exports = function() {
     app.use(bodyParser.json());
 
     // ROUTES //
-    //require('../app/routes/user.server.routes.js')(app);
+    require('../app/routes/index.server.routes.js')(app);
 
     return app;
 };
