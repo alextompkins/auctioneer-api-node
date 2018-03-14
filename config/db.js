@@ -4,7 +4,7 @@ let state = {
     pool: null
 };
 
-exports.connect = function(done) {
+exports.create_pool = function(done) {
     state.pool = mysql.createPool({
         multipleStatements: true,
         host: "HOST",
