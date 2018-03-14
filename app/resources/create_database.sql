@@ -1,5 +1,5 @@
 # MySQL scripts for dropping existing tables and recreating the database table structure
-# version  0.0.3; 26 February 2018
+# version  0.0.4; 14 March 2018
 # Note: WebStorm throws an annoying error 'expecting one of the following: ALGORITHM DEFINER SQL VIEW'. This is an erroneous error and the script should run successfully despite this error.
 
 # Tables must be dropped in a particular order due to referential constraints i.e. foreign keys.
@@ -18,13 +18,14 @@ CREATE TABLE auction_user (
   user_givenname varchar(50) NOT NULL,
   user_familyname varchar(50) NOT NULL,
   user_email varchar(320) NOT NULL,
-  user_password varchar(64) NOT NULL,
-  user_salt varchar(32) DEFAULT NULL,
+  user_password varchar(512) NOT NULL,
+  user_salt varchar(128) DEFAULT NULL,
   user_token varchar(32) DEFAULT NULL,
   user_accountbalance decimal(10,2) NOT NULL DEFAULT '0',
   user_reputation int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (user_id),
   UNIQUE KEY user_id (user_id),
+  UNIQUE KEY user_email (user_email),
   UNIQUE KEY user_token (user_token),
   UNIQUE KEY user_username (user_username)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -36,7 +37,6 @@ CREATE TABLE category (
   PRIMARY KEY (category_id),
   UNIQUE KEY category_id (category_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE auction (
   auction_id int(10) NOT NULL AUTO_INCREMENT,
