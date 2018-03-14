@@ -5,6 +5,7 @@ module.exports = function() {
     // INITIALISE EXPRESS //
     const app = express();
     app.use(bodyParser.json());
+    app.rootUrl = "/api/v1";
 
     // ROUTES //
     require('../app/routes/index.server.routes.js')(app);
