@@ -43,6 +43,34 @@ exports.view = function (id, done) {
         });
 };
 
+/*
+exports.selectUser = function (id, done) {
+	const viewSQL = "SELECT * FROM view_auction_user WHERE userId = ?";
+
+	db.get_pool().query(viewSQL, id)
+		.then(function (rows) {
+			if (rows.length === 0) {
+				return done( {err: 404} );
+			}
+
+			let userData = rows[0];
+			let user = {
+				"username": userData.username,
+				"givenName": userData.givenName,
+				"familyName": userData.familyName,
+				"email": userData.email,
+				"accountBalance": userData.accountBalance
+			};
+			// TODO: email and accountBalance properties only included if request is for own user_id
+			return done( {user: user} );
+		})
+		.catch(function (err) {
+			console.log(err);
+			return done( {err: 400} );
+		});
+};
+*/
+
 function buildUpdateUserSQL(id, params) {
     const PROPERTIES = [
         "username", "password", "givenName", "familyName", "email"
