@@ -20,14 +20,14 @@ exports.login = function (req, res) {
     let id;
 
     Users.findByUsernameOrEmail(req.query.username, req.query.email, function (result) {
-        if (result === undefined || result.password !== req.query.password) {
+        if (typeof result === "undefined" || result.password !== req.query.password) {
             res.statusMessage = "Invalid username/email/password supplied";
             res.status(400)
                 .send();
         } else {
             id = result.userId;
             Users.login(id, function (result) {
-                if (result === undefined) {
+                if (typeof result === "undefined") {
                     res.statusMessage = "Internal server error";
                     res.status(500)
                         .send();
@@ -46,7 +46,7 @@ exports.logout = function (req, res) {
     let id;
 
     Users.findByToken(token, function (result) {
-        if (result === undefined) {
+        if (typeof result === "undefined") {
             res.statusMessage = "Unauthorized";
             res.status(401)
                 .send();
