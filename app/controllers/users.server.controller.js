@@ -20,14 +20,14 @@ exports.login = function (req, res) {
     let id;
 
     Users.findByUsernameOrEmail(req.query.username, req.query.email, function (result) {
-        if (result === "undefined" || result.password !== req.query.password) {
+        if (result === undefined || result.password !== req.query.password) {
             res.statusMessage = "Invalid username/email/password supplied";
             res.status(400)
                 .send();
         } else {
             id = result.userId;
             Users.login(id, function (result) {
-                if (result === "undefined") {
+                if (result === undefined) {
                     res.statusMessage = "Internal server error";
                     res.status(500)
                         .send();
@@ -42,10 +42,28 @@ exports.login = function (req, res) {
 };
 
 exports.logout = function (req, res) {
-    Users.logout(function (result) {
-        res.statusMessage = result.statusMessage;
-        res.status(result.status)
-            .send(result.body);
+    let token = req.header('X-Authorization');
+    let id;
+
+    Users.findByToken(token, function (result) {
+        if (result === undefined) {
+            res.statusMessage = "Unauthorized";
+            res.status(401)
+                .send();
+        } else {
+            id = result.userId;
+            Users.logout(id, function (result) {
+                if (result === true) {
+                    res.statusMessage = "OK";
+                    res.status(200)
+                        .send();
+                } else if (result === false) {
+                    res.statusMessage = "Internal server error";
+                    res.status(500)
+                        .send();
+                }
+            });
+        }
     });
 };
 

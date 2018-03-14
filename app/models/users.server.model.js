@@ -19,7 +19,7 @@ exports.create = function(values, done) {
 };
 
 exports.findByUsernameOrEmail = function (username, email, done) {
-    const findSQL = "SELECT * FROM view_auction_user WHERE username = ? OR email = ?;";
+    const findSQL = "SELECT * FROM view_auction_user WHERE username = ? OR email = ?";
 
     db.get_pool().query(findSQL, [username, email])
         .then(function (rows) {
@@ -31,19 +31,45 @@ exports.findByUsernameOrEmail = function (username, email, done) {
         });
 };
 
-exports.login = function(id, done) {
+exports.findByToken = function (token, done) {
+    const findSQL = "SELECT * FROM view_auction_user WHERE token = ?";
+
+    db.get_pool().query(findSQL, token)
+        .then(function (rows) {
+            return done(rows[0]);
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done();
+        })
+};
+
+exports.login = function (id, done) {
     const loginSQL = "UPDATE view_auction_user SET token = ? WHERE userId = ?";
 
     let token = uid(32);
 
     db.get_pool().query(loginSQL, [token, id])
         .then(function () {
-            return done({"id": id, "token": token})
+            return done({"id": id, "token": token});
         })
         .catch(function (err) {
             console.log(err);
             return done();
         });
+};
+
+exports.logout = function (id, done) {
+    const logoutSQL = "UPDATE view_auction_user SET token = NULL WHERE userId = ?";
+
+    db.get_pool().query(logoutSQL, id)
+        .then(function () {
+            return done(true);
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done(false);
+        })
 };
 
 exports.view = function (id, done) {
