@@ -4,7 +4,7 @@ const fs = require("mz/fs");
 exports.resetDB = function(done) {
     fs.readFile("app/resources/create_database.sql", "utf8")
         .then(function (sql) {
-            return db.get_pool().query(sql);
+            db.get_pool().query(sql);
         })
         .then(function () {
             return done({"status": 200, "statusMessage": "OK"});
