@@ -17,10 +17,27 @@ exports.create = function (req, res) {
 };
 
 exports.login = function (req, res) {
-    Users.login(function (result) {
-        res.statusMessage = result.statusMessage;
-        res.status(result.status)
-            .json(result.json);
+    let id;
+
+    Users.findByUsernameOrEmail(req.query.username, req.query.email, function (result) {
+        if (result === "undefined" || result.password !== req.query.password) {
+            res.statusMessage = "Invalid username/email/password supplied";
+            res.status(400)
+                .send();
+        } else {
+            id = result.userId;
+            Users.login(id, function (result) {
+                if (result === "undefined") {
+                    res.statusMessage = "Internal server error";
+                    res.status(500)
+                        .send();
+                } else {
+                    res.statusMessage = "OK";
+                    res.status(200)
+                        .json(result);
+                }
+            });
+        }
     });
 };
 

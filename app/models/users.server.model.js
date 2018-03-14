@@ -1,4 +1,5 @@
 const db = require('../../config/db');
+const uid = require('uid');
 
 exports.create = function(values, done) {
     const createSQL = "INSERT INTO auction_user (user_username, user_givenname, " +
@@ -14,6 +15,34 @@ exports.create = function(values, done) {
         .catch(function (err) {
             console.log(err);
             return done({"status": 400, "statusMessage": "Malformed request."});
+        });
+};
+
+exports.findByUsernameOrEmail = function (username, email, done) {
+    const findSQL = "SELECT * FROM view_auction_user WHERE username = ? OR email = ?;";
+
+    db.get_pool().query(findSQL, [username, email])
+        .then(function (rows) {
+            return done(rows[0]);
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done();
+        });
+};
+
+exports.login = function(id, done) {
+    const loginSQL = "UPDATE view_auction_user SET token = ? WHERE userId = ?";
+
+    let token = uid(32);
+
+    db.get_pool().query(loginSQL, [token, id])
+        .then(function () {
+            return done({"id": id, "token": token})
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done();
         });
 };
 
