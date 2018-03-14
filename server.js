@@ -4,7 +4,6 @@ const app = express();
 const port = 4941;
 
 // Test connection to MySQL on start-up
-
 new Promise(
     function (resolve, reject) {
         db.create_pool(function (err) {
