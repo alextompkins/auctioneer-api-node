@@ -7,10 +7,10 @@ exports.loadData = function(done) {
             return db.get_pool().query(sql);
         })
         .then(function () {
-            return done({"status": 201, "body": "Sample of data has been reloaded."});
+            return done({"status": 201, "statusMessage": "Sample of data has been reloaded."});
         })
         .catch(function (err) {
             console.log(err);
-            return done({"status": 400, "body": "Malformed request."});
+            return done({"status": 400, "statusMessage": "Malformed request."});
         });
 };
