@@ -8,10 +8,10 @@ module.exports = function() {
     app.rootUrl = "/api/v1";
 
     // ROUTES //
-    require('../app/routes/index.server.routes.js')(app);
-    require('../app/routes/reset.server.routes.js')(app);
-    require('../app/routes/resample.server.routes.js')(app);
+    require('../app/routes/reset.server.routes')(app);
+    require('../app/routes/resample.server.routes')(app);
     require('../app/routes/users.server.routes')(app);
+    require('../app/routes/auctions.server.routes')(app);
 
     return app;
 };
