@@ -1,8 +1,8 @@
 const db = require('../../config/db');
 
 const getBidsByAuctionId = function (id, done) {
-    const selectSQL = "SELECT bid_amount, bid_datetime, user_id, user_username FROM bid " +
-        "JOIN auction_user ON bid_userid = user_id WHERE bid_auctionid = ?";
+    const selectSQL = "SELECT bid_amount, bid_datetime, user_id, user_username FROM bid JOIN " +
+        "auction_user ON bid_userid = user_id WHERE bid_auctionid = ? ORDER BY bid_datetime ASC";
 
     db.get_pool().query(selectSQL, id)
         .then(function (rows) {
@@ -49,8 +49,16 @@ exports.getFullAuctionInfo = function (id, done) {
                         "seller": {
                             "id": auction.user_id,
                             "username": auction.user_username
-                        }
+                        },
+                        "startingBid": auction.auction_startingprice
                     };
+                    let currentBid = 0;
+                    for (let bid of bids) {
+                        if (bid.amount > currentBid) {
+                            currentBid = bid.amount;
+                        }
+                    }
+                    auctionData.currentBid = currentBid;
                     auctionData.bids = bids;
 
                     return done(auctionData);
