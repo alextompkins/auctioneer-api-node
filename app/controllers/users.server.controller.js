@@ -10,9 +10,19 @@ exports.create = function (req, res) {
     ];
 
     Users.create(values, function (result) {
-        res.statusMessage = result.statusMessage;
-        res.status(result.status)
-            .json(result.json);
+        if (typeof result !== "undefined") {
+            let json = {
+                "id": result
+            };
+
+            res.statusMessage = "OK";
+            res.status(201)
+                .json(json);
+        } else {
+            res.statusMessage = "Malformed request.";
+            res.status(400)
+                .send();
+        }
     });
 };
 

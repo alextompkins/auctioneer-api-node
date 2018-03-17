@@ -7,14 +7,11 @@ exports.create = function(values, done) {
 
     db.get_pool().query(createSQL, values)
         .then(function (result) {
-            let json = {
-                "id": result.insertId
-            };
-            return done({"status": 201, "statusMessage": "OK", "json": json});
+            return done(result.insertId);
         })
         .catch(function (err) {
             console.log(err);
-            return done({"status": 400, "statusMessage": "Malformed request."});
+            return done();
         });
 };
 
