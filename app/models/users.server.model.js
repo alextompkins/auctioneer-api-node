@@ -59,59 +59,33 @@ exports.logout = function (id, done) {
         })
 };
 
-exports.view = function (id, done) {
-    const viewSQL = "SELECT * FROM view_auction_user WHERE userId = ?";
-
-    db.get_pool().query(viewSQL, id)
-        .then(function (rows) {
-            if (rows.length === 0) {
-                return done({"status": 404, "statusMessage": "Not found"});
-            }
-
-            let userData = rows[0];
-            let json = {
-                "username": userData.username,
-                "givenName": userData.givenName,
-                "familyName": userData.familyName,
-                "email": userData.email,
-                "accountBalance": userData.accountBalance
-            };
-            // TODO: email and accountBalance properties only included if request is for own user_id
-            return done({"status": 200, "statusMessage": "OK", "json": json});
-        })
-        .catch(function (err) {
-            console.log(err);
-            return done({"status": 400, "statusMessage": "Malformed request."});
-        });
-};
-
-/*
-exports.selectUser = function (id, done) {
+exports.findById = function (id, isCurrentUser, done) {
 	const viewSQL = "SELECT * FROM view_auction_user WHERE userId = ?";
 
 	db.get_pool().query(viewSQL, id)
 		.then(function (rows) {
 			if (rows.length === 0) {
-				return done( {err: 404} );
+				return done();
 			}
 
 			let userData = rows[0];
 			let user = {
-				"username": userData.username,
-				"givenName": userData.givenName,
-				"familyName": userData.familyName,
-				"email": userData.email,
-				"accountBalance": userData.accountBalance
-			};
-			// TODO: email and accountBalance properties only included if request is for own user_id
-			return done( {user: user} );
+                "username": userData.username,
+                "givenName": userData.givenName,
+                "familyName": userData.familyName,
+            };
+			if (isCurrentUser) {
+			    user.email = userData.email;
+			    user.accountBalance = userData.accountBalance;
+			}
+
+			return done(user);
 		})
 		.catch(function (err) {
 			console.log(err);
-			return done( {err: 400} );
+			return done();
 		});
 };
-*/
 
 function buildUpdateUserSQL(id, params) {
     const PROPERTIES = [

@@ -13,17 +13,39 @@ const findUserByToken = function (token, done) {
         })
 };
 
-exports.authorise = function (req, res, next) {
+exports.setAuthorisedUser = function (req, res, next) {
     let token = req.header('X-Authorization');
 
-    findUserByToken(token, function (result) {
-        if (typeof result !== "undefined") {
-            req.authorisedUserId = result.user_id;
-            next();
-        } else {
-            res.statusMessage = "Unauthorized";
-            res.status(401)
-                .send();
-        }
-    });
+    if (typeof token !== "undefined") {
+        findUserByToken(token, function (result) {
+            if (typeof result !== "undefined") {
+                console.log("Authorised user: " + result.user_id);
+                req.authorisedUserId = result.user_id;
+            }
+        });
+    }
+    next();
+};
+
+exports.loginRequired = function (req, res, next) {
+    let token = req.header('X-Authorization');
+    let authorised = false;
+
+    if (typeof token !== "undefined") {
+        findUserByToken(token, function (result) {
+            if (typeof result !== "undefined") {
+                console.log("Authorised user when login required: " + result.user_id);
+                req.authorisedUserId = result.user_id;
+                authorised = true;
+                next();
+            }
+        });
+    }
+
+    if (!authorised) {
+        console.log("Login required not met");
+        res.statusMessage = "Unauthorized";
+        res.status(401)
+            .send();
+    }
 };

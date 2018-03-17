@@ -43,6 +43,7 @@ exports.login = function (req, res) {
 
 exports.logout = function (req, res) {
     let id = req.authorisedUserId;
+    console.log("Current user: " + req.authorisedUserId);
 
     Users.logout(id, function (result) {
         if (result === true) {
@@ -59,11 +60,19 @@ exports.logout = function (req, res) {
 
 exports.view = function (req, res) {
     let id = req.params.id;
+    let isCurrentUser = id === req.authorisedUserId;
+    console.log("ID requested: " + id + " Current user: " + req.authorisedUserId);
 
-    Users.view(id, function (result) {
-        res.statusMessage = result.statusMessage;
-        res.status(result.status)
-            .json(result.json);
+    Users.findById(id, isCurrentUser, function (result) {
+        if (typeof result !== "undefined") {
+            res.statusMessage = "OK";
+            res.status(200)
+                .json(result);
+        } else {
+            res.statusMessage = "Not found";
+            res.status(404)
+                .send();
+        }
     });
 };
 
