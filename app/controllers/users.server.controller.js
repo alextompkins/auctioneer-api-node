@@ -42,27 +42,17 @@ exports.login = function (req, res) {
 };
 
 exports.logout = function (req, res) {
-    let token = req.header('X-Authorization');
-    let id;
+    let id = req.authorisedUserId;
 
-    Users.findByToken(token, function (result) {
-        if (typeof result === "undefined") {
-            res.statusMessage = "Unauthorized";
-            res.status(401)
+    Users.logout(id, function (result) {
+        if (result === true) {
+            res.statusMessage = "OK";
+            res.status(200)
                 .send();
-        } else {
-            id = result.userId;
-            Users.logout(id, function (result) {
-                if (result === true) {
-                    res.statusMessage = "OK";
-                    res.status(200)
-                        .send();
-                } else if (result === false) {
-                    res.statusMessage = "Internal server error";
-                    res.status(500)
-                        .send();
-                }
-            });
+        } else if (result === false) {
+            res.statusMessage = "Internal server error";
+            res.status(500)
+                .send();
         }
     });
 };

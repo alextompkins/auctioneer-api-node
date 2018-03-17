@@ -1,4 +1,5 @@
 const users = require('../controllers/users.server.controller');
+const authorise = require('../middleware/authorise');
 
 module.exports = function (app) {
     app.route(app.rootUrl + '/users')
@@ -8,7 +9,7 @@ module.exports = function (app) {
         .post(users.login);
 
     app.route(app.rootUrl + '/users/logout')
-        .post(users.logout);
+        .post(authorise.authorise, users.logout);
 
     app.route(app.rootUrl + '/users/:id')
         .get(users.view)

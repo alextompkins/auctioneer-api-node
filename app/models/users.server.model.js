@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-const uid = require('uid');
+const randtoken = require('rand-token');
 
 exports.create = function(values, done) {
     const createSQL = "INSERT INTO auction_user (user_username, user_givenname, " +
@@ -31,23 +31,10 @@ exports.findByUsernameOrEmail = function (username, email, done) {
         });
 };
 
-exports.findByToken = function (token, done) {
-    const findSQL = "SELECT * FROM view_auction_user WHERE token = ?";
-
-    db.get_pool().query(findSQL, token)
-        .then(function (rows) {
-            return done(rows[0]);
-        })
-        .catch(function (err) {
-            console.log(err);
-            return done();
-        })
-};
-
 exports.login = function (id, done) {
     const loginSQL = "UPDATE view_auction_user SET token = ? WHERE userId = ?";
 
-    let token = uid(32);
+    let token = randtoken.generate(32);
 
     db.get_pool().query(loginSQL, [token, id])
         .then(function () {
