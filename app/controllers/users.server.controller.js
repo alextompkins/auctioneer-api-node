@@ -19,7 +19,7 @@ exports.create = function (req, res) {
             res.status(201)
                 .json(json);
         } else {
-            res.statusMessage = "Malformed request.";
+            res.statusMessage = "Malformed request";
             res.status(400)
                 .send();
         }
@@ -88,9 +88,25 @@ exports.change = function (req, res) {
     let id =  req.params.id;
     let changes = req.body;
 
-    Users.change(id, changes, function (result) {
-        res.statusMessage = result.statusMessage;
-        res.status(result.status)
-            .send(result.body);
-    });
+    if (id !== req.authorisedUserId) {
+        res.statusMessage = "Unauthorized";
+        res.status(401)
+            .send();
+    } else {
+        Users.change(id, changes, function (result) {
+            if (result === true) {
+                res.statusMessage = "OK";
+                res.status(201)
+                    .send();
+            } else if (result === false) {
+                res.statusMessage = "Malformed request";
+                res.status(400)
+                    .send();
+            } else {
+                res.statusMessage = "Internal server error";
+                res.status(500)
+                    .send();
+            }
+        });
+    }
 };
