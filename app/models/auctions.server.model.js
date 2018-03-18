@@ -1,6 +1,6 @@
 const db = require('../../config/db');
 
-const getBidsByAuctionId = function (id, done) {
+exports.getBidsByAuctionId = function (id, done) {
     const selectSQL = "SELECT bid_amount, bid_datetime, user_id, user_username FROM bid JOIN " +
         "auction_user ON bid_userid = user_id WHERE bid_auctionid = ? ORDER BY bid_datetime ASC";
 
@@ -36,7 +36,7 @@ exports.getFullAuctionInfo = function (id, done) {
         })
         .then(function (auction) {
             if (typeof auction !== "undefined") {
-                getBidsByAuctionId(id, function (bids) {
+                module.exports.getBidsByAuctionId(id, function (bids) {
                     let auctionData = {
                         "categoryId": auction.category_id,
                         "categoryTitle": auction.category_title,
@@ -66,6 +66,92 @@ exports.getFullAuctionInfo = function (id, done) {
             } else {
                 return done();
             }
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done();
+        });
+};
+
+function buildSearchSQL(params) {
+    let searchSQL =
+        "\nSELECT  " +
+        "\n  auction_id AS id, " +
+        "\n  category_title AS categoryTitle, " +
+        "\n  auction_categoryid AS categoryId, " +
+        "\n  auction_reserveprice AS reservePrice, " +
+        "\n  auction_startingdate AS startDateTime, " +
+        "\n  auction_endingdate AS endDateTime, " +
+        "\n  MAX(bid_amount) AS currentBid, " +
+        "\n    ( " +
+        "\n    SELECT bid_userid " +
+        "\n    FROM bid " +
+        "\n    WHERE bid_auctionid = auction_id " +
+        "\n    ORDER BY bid.bid_amount DESC " +
+        "\n    LIMIT 1 " +
+        "\n  ) AS highest_bidder " +
+        "\nFROM " +
+        "\n  (((auction " +
+        "\n  JOIN category ON ((category_id = auction_categoryid))) " +
+        "\n  JOIN auction_user seller ON ((auction_userid = seller.user_id))) " +
+        "\n  LEFT JOIN bid ON ((auction_id = bid_auctionid))) " +
+        "\nWHERE ";
+
+    let conditions = [];
+    let values = [];
+
+    if (typeof params.q !== "undefined") {
+        conditions.push("\nauction_title LIKE ?");
+        values.push("%" + params.q + "%");
+    }
+
+    if (typeof params["category-id"] !== "undefined") {
+        conditions.push("\nauction_categoryid = ?");
+        values.push(parseInt(params["category-id"]));
+    }
+
+    if (typeof params.seller !== "undefined") {
+        conditions.push("\nseller.user_id = ?");
+        values.push(parseInt(params.seller));
+    }
+
+    if (typeof params.bidder !== "undefined") {
+        conditions.push("\n? IN (SELECT bid_userid FROM bid WHERE bid_auctionid = auction_id)");
+        values.push(parseInt(params.bidder));
+    }
+
+    searchSQL += (conditions.length ? conditions.join(" AND ") : 1);
+    searchSQL += "\nGROUP BY auction_id \nORDER BY auction_endingdate DESC";
+
+    if (typeof params.count !== "undefined") {
+        searchSQL += "\nLIMIT ? ";
+        values.push(parseInt(params.count));
+
+        if (typeof params.startIndex !== "undefined") {
+            searchSQL += "\nOFFSET ? ";
+            values.push(parseInt(params.startIndex));
+        }
+    }
+
+    return {
+        searchSQL: searchSQL,
+        values: values
+    };
+}
+
+exports.getAllAuctionInfo = function (params, done) {
+    let search = buildSearchSQL(params);
+
+    db.get_pool().query(search.searchSQL, search.values)
+        .then(function (rows) {
+            for (let row of rows) {
+                row.startDateTime = row.startDateTime.getTime();
+                row.endDateTime = row.endDateTime.getTime();
+                if (row.endDateTime < Date.now()) {
+                    row.winner = row.highest_bidder;
+                }
+            }
+            return done(rows);
         })
         .catch(function (err) {
             console.log(err);

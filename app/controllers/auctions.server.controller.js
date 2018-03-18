@@ -1,7 +1,17 @@
 const Auctions = require('../models/auctions.server.model');
 
 exports.viewAll = function (req, res) {
-
+    Auctions.getAllAuctionInfo(req.query, function (results) {
+        if (typeof results !== "undefined") {
+            res.statusMessage = "OK";
+            res.status(200)
+                .json(results);
+        } else {
+            res.statusMessage = "Bad request.";
+            res.status(400)
+                .send();
+        }
+    });
 };
 
 exports.view = function (req, res) {
