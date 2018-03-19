@@ -158,3 +158,18 @@ exports.getAllAuctionInfo = function (params, done) {
             return done();
         });
 };
+
+exports.create = function (values, done) {
+    const createSQL = "INSERT INTO auction (auction_title, auction_categoryid, auction_description, " +
+        "auction_creationdate, auction_startingdate, auction_endingdate, auction_reserveprice, " +
+        "auction_startingprice, auction_userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    db.get_pool().query(createSQL, values)
+        .then(function (result) {
+            return done(result.insertId);
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done();
+        });
+};
