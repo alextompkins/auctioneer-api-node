@@ -10,7 +10,7 @@ module.exports = function (app) {
         .get(auctions.view)
         .patch(authorise.loginRequired, auctions.edit);
 
-    app.route(app.rootUrl + 'auctions/:id/bids')
+    app.route(app.rootUrl + '/auctions/:id/bids')
         .get(auctions.viewBids)
         .post(authorise.loginRequired, auctions.makeBid);
 };

@@ -109,7 +109,19 @@ exports.edit = function (req, res) {
 };
 
 exports.viewBids = function (req, res) {
+    let bidId = req.params.id;
 
+    Auctions.getBidsByAuctionId(bidId, function (results) {
+        if (typeof results !== "undefined") {
+            res.statusMessage = "OK";
+            res.status(200)
+                .json(results);
+        } else {
+            res.statusMessage = "Not found";
+            res.status(404)
+                .send();
+        }
+    });
 };
 
 exports.makeBid = function (req, res) {

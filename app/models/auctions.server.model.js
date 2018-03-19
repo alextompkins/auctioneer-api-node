@@ -2,7 +2,7 @@ const db = require('../../config/db');
 
 exports.getBidsByAuctionId = function (id, done) {
     const selectSQL = "SELECT bid_amount, bid_datetime, user_id, user_username FROM bid JOIN " +
-        "auction_user ON bid_userid = user_id WHERE bid_auctionid = ? ORDER BY bid_datetime ASC";
+        "auction_user ON bid_userid = user_id WHERE bid_auctionid = ? ORDER BY bid_datetime DESC";
 
     db.get_pool().query(selectSQL, id)
         .then(function (rows) {
