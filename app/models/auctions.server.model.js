@@ -173,3 +173,40 @@ exports.create = function (values, done) {
             return done();
         });
 };
+
+function buildUpdateAuctionSQL(id, params) {
+    const PROPERTIES = [
+        "auction_categoryid", "auction_title", "auction_description", "auction_startingdate",
+        "auction_endingdate", "auction_reserveprice", "auction_startingprice"
+    ];
+
+    let changes = [];
+    for (let property of PROPERTIES) {
+        if (typeof params[property] !== "undefined") {
+            changes.push(property + " = '" + params[property] + "'");
+            delete params[property];
+        }
+    }
+
+    if (changes.length === 0 || Object.keys(params).length > 0) {
+        return "";
+    } else {
+        return "UPDATE auction SET " + changes.join(', ') + " WHERE auction_id = " + id;
+    }
+}
+
+exports.change = function (id, changes, done) {
+    let updateSQL = buildUpdateAuctionSQL(id, changes);
+    if (updateSQL === "") {
+        return done(false);
+    }
+
+    db.get_pool().query(updateSQL)
+        .then(function () {
+            return done(true);
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done();
+        });
+};
