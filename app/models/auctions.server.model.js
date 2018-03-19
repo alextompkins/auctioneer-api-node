@@ -188,7 +188,7 @@ function buildUpdateAuctionSQL(id, params) {
         }
     }
 
-    if (changes.length === 0 || Object.keys(params).length > 0) {
+    if (changes.length === 0) {
         return "";
     } else {
         return "UPDATE auction SET " + changes.join(', ') + " WHERE auction_id = " + id;

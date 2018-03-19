@@ -35,7 +35,7 @@ exports.create = function (req, res) {
         req.body.title,
         req.body.categoryId,
         req.body.description,
-        Date.now(),
+        new Date(),
         new Date(req.body.startDateTime),
         new Date(req.body.endDateTime),
         req.body.reservePrice,
@@ -72,33 +72,37 @@ exports.edit = function (req, res) {
         "auction_startingprice": req.body.startingBid
     };
 
-    // TODO need to check that the seller's id === authorisedUserId not the auction id
-    if (id !== req.authorisedUserId) {
-        console.log(req.authorisedUserId);
-        res.statusMessage = "Unauthorized.";
-        res.status(401)
-            .send();
-    } else if (Date.now() > changes.auction_startingdate) {
-        res.statusMessage = "Forbidden - bidding has begun on the auction.";
-        res.status(403)
-            .send();
-    } else {
-        Auctions.change(id, changes, function (result) {
-            if (result === true) {
-                res.statusMessage = "OK";
-                res.status(201)
-                    .send();
-            } else if (result === false) {
-                res.statusMessage = "Bad request.";
-                res.status(400)
-                    .send();
-            } else {
-                res.statusMessage = "Internal server error";
-                res.status(500)
-                    .send();
-            }
-        });
-    }
+    Auctions.getFullAuctionInfo(id, function (auction) {
+        if (typeof auction === "undefined") {
+            res.statusMessage = "Not found.";
+            res.status(404)
+                .send();
+        } else if (auction.seller.id !== parseInt(req.authorisedUserId)) {
+            res.statusMessage = "Unauthorized.";
+            res.status(401)
+                .send();
+        } else if (new Date() > auction.startDateTime) {
+            res.statusMessage = "Forbidden - bidding has begun on the auction.";
+            res.status(403)
+                .send();
+        } else {
+            Auctions.change(id, changes, function (result) {
+                if (result === true) {
+                    res.statusMessage = "OK";
+                    res.status(201)
+                        .send();
+                } else if (result === false) {
+                    res.statusMessage = "Bad request.";
+                    res.status(400)
+                        .send();
+                } else {
+                    res.statusMessage = "Internal server error";
+                    res.status(500)
+                        .send();
+                }
+            });
+        }
+    });
 };
 
 exports.viewBids = function (req, res) {
