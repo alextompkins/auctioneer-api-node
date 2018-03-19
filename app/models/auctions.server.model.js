@@ -150,6 +150,7 @@ exports.getAllAuctionInfo = function (params, done) {
                 if (row.endDateTime < Date.now()) {
                     row.winner = row.highest_bidder;
                 }
+                delete row.highest_bidder;
             }
             return done(rows);
         })
@@ -208,5 +209,19 @@ exports.change = function (id, changes, done) {
         .catch(function (err) {
             console.log(err);
             return done();
+        });
+};
+
+exports.createBidOnAuction = function (values, done) {
+    let createSQL = "INSERT INTO bid (bid_userid, bid_auctionid, bid_amount, bid_datetime) " +
+        "VALUES (?, ?, ?, ?)";
+
+    db.get_pool().query(createSQL, values)
+        .then(function (result) {
+            return done(true);
+        })
+        .catch(function (err) {
+            console.log(err);
+            return done(false);
         });
 };

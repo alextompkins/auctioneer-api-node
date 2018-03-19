@@ -125,5 +125,49 @@ exports.viewBids = function (req, res) {
 };
 
 exports.makeBid = function (req, res) {
+    let userId = req.authorisedUserId;
+    let auctionId = req.params.id;
+    let amount = req.query.amount;
+    let bidDateTime = new Date();
 
+    Auctions.getFullAuctionInfo(auctionId, function (auction) {
+        if (typeof auction === "undefined") {
+            res.statusMessage = "Not found";
+            res.status(404)
+                .send();
+        } else if (auction.seller.id === parseInt(req.authorisedUserId)) {
+            res.statusMessage = "Forbidden - you cannot bid on your own auction.";
+            res.status(400)
+                .send();
+        } else if (new Date() >= auction.endDateTime) {
+            res.statusMessage = "Forbidden - the auction has ended.";
+            res.status(400)
+                .send();
+        } else if (amount <= auction.highestBid) {
+            res.statusMessage = "Bad request - you cannot make a bid that is not higher than the current bid.";
+        } else {
+            let values = [
+                userId,
+                auctionId,
+                amount,
+                bidDateTime
+            ];
+
+            Auctions.createBidOnAuction(values, function (result) {
+                if (result === true) {
+                    res.statusMessage = "OK";
+                    res.status(201)
+                        .send();
+                } else if (result === false) {
+                    res.statusMessage = "Bad request.";
+                    res.status(400)
+                        .send();
+                } else {
+                    res.statusMessage = "Internal server error";
+                    res.status(500)
+                        .send();
+                }
+            });
+        }
+    });
 };
