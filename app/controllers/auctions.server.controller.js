@@ -62,12 +62,15 @@ exports.create = function (req, res) {
 
 exports.edit = function (req, res) {
     let id = req.params.id;
+
     let changes = {
         "auction_categoryid": req.body.categoryId,
         "auction_title": req.body.title,
         "auction_description": req.body.description,
-        "auction_startingdate": new Date(req.body.startDateTime),
-        "auction_endingdate": new Date(req.body.endDateTime),
+        "auction_startingdate": typeof req.body.startDateTime !== "undefined" ?
+            new Date(req.body.startDateTime) : undefined,
+        "auction_endingdate": typeof req.body.endDateTime !== "undefined" ?
+            new Date(req.body.endDateTime) : undefined,
         "auction_reserveprice": req.body.reservePrice,
         "auction_startingprice": req.body.startingBid
     };
