@@ -82,14 +82,7 @@ function buildSearchSQL(params) {
         "\n  auction_reserveprice AS reservePrice, " +
         "\n  auction_startingdate AS startDateTime, " +
         "\n  auction_endingdate AS endDateTime, " +
-        "\n  MAX(bid_amount) AS currentBid, " +
-        "\n    ( " +
-        "\n    SELECT bid_userid " +
-        "\n    FROM bid " +
-        "\n    WHERE bid_auctionid = auction_id " +
-        "\n    ORDER BY bid.bid_amount DESC " +
-        "\n    LIMIT 1 " +
-        "\n  ) AS highest_bidder " +
+        "\n  MAX(bid_amount) AS currentBid " +
         "\nFROM " +
         "\n  (((auction " +
         "\n  JOIN category ON ((category_id = auction_categoryid))) " +
@@ -120,8 +113,23 @@ function buildSearchSQL(params) {
         values.push(parseInt(params.bidder));
     }
 
+    if (typeof params.winner !== "undefined") {
+        conditions.push("\n? IN (" +
+            "\nSELECT bid_userid FROM bid" +
+            "\nWHERE bid_auctionid = auction_id" +
+            "\nAND bid_amount IN" +
+            "\n  (" +
+            "\n  SELECT MAX(bid_amount)" +
+            "\n  FROM bid" +
+            "\n  WHERE bid_auctionid = auction_id" +
+            "\n  AND CURRENT_TIMESTAMP > auction_endingdate" +
+            "\n  )" +
+            "\n)");
+        values.push(parseInt(params.winner));
+    }
+
     searchSQL += (conditions.length ? conditions.join(" AND ") : 1);
-    searchSQL += "\nGROUP BY auction_id \nORDER BY auction_endingdate DESC";
+    searchSQL += "\nGROUP BY auction_id \nORDER BY auction_startingdate DESC";
 
     if (typeof params.count !== "undefined") {
         searchSQL += "\nLIMIT ? ";
@@ -147,10 +155,6 @@ exports.getAllAuctionInfo = function (params, done) {
             for (let row of rows) {
                 row.startDateTime = row.startDateTime.getTime();
                 row.endDateTime = row.endDateTime.getTime();
-                if (row.endDateTime < Date.now()) {
-                    row.winner = row.highest_bidder;
-                }
-                delete row.highest_bidder;
             }
             return done(rows);
         })
