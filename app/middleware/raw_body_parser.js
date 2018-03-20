@@ -1,10 +1,10 @@
 exports.rawParser = function(req, res, next) {
-    req.rawBody = '';
-    req.setEncoding('utf8');
-
+    let data = new Buffer('');
     req.on('data', function(chunk) {
-        req.rawBody += chunk;
+        data = Buffer.concat([data, chunk]);
     });
-
-    next();
+    req.on('end', function() {
+        req.rawBody = data;
+        next();
+    });
 };
