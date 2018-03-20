@@ -25,3 +25,6 @@ typings/
 *.tgz
 .yarn-integrity
 .env
+
+# Custom
+storage/
