@@ -56,11 +56,10 @@ exports.deletePhotoByAuctionId = function (auctionId, done) {
     const deleteSQL = "DELETE FROM photo WHERE photo_auctionid = ?";
 
     getPhotoInfoByAuctionId(auctionId, function (photoInfo) {
-        let path = photoInfo.photo_image_URI;
         if (typeof photoInfo !== "undefined") {
             db.get_pool().query(deleteSQL, auctionId)
                 .then(function () {
-                    return fs.unlink(path);
+                    return fs.unlink(photoInfo.photo_image_URI);
                 })
                 .then(function () {
                     return done(true);

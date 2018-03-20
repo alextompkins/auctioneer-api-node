@@ -53,9 +53,11 @@ exports.getFullAuctionInfo = function (id, done) {
                         "startingBid": auction.auction_startingprice
                     };
                     let currentBid = 0;
-                    for (let bid of bids) {
-                        if (bid.amount > currentBid) {
-                            currentBid = bid.amount;
+                    if (typeof bids !== "undefined") {
+                        for (let bid of bids) {
+                            if (bid.amount > currentBid) {
+                                currentBid = bid.amount;
+                            }
                         }
                     }
                     auctionData.currentBid = currentBid;
