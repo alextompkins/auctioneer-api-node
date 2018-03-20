@@ -12,6 +12,7 @@ module.exports = function() {
     require('../app/routes/resample.server.routes')(app);
     require('../app/routes/users.server.routes')(app);
     require('../app/routes/auctions.server.routes')(app);
+    require('../app/routes/photos.server.routes')(app);
 
     return app;
 };
