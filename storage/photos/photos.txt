@@ -1,0 +1,2 @@
+Photos go here.
+This file only exists so that the directory is added to Git.
