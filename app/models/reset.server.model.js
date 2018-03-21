@@ -13,7 +13,7 @@ exports.resetDB = function(done) {
         })
         .then(function (files) {
             for (let file of files) {
-                if (file !== "photos.txt") {
+                if (file !== "default.png") {
                     fs.unlink(directory + file);
                 }
             }
