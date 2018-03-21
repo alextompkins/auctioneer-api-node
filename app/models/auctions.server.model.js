@@ -81,6 +81,7 @@ function buildSearchSQL(params) {
         "\n  auction_id AS id, " +
         "\n  category_title AS categoryTitle, " +
         "\n  auction_categoryid AS categoryId, " +
+        "\n  auction_title as title, " +
         "\n  auction_reserveprice AS reservePrice, " +
         "\n  auction_startingdate AS startDateTime, " +
         "\n  auction_endingdate AS endDateTime, " +
