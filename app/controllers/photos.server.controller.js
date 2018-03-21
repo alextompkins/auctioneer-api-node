@@ -4,16 +4,24 @@ const Auctions = require('../models/auctions.server.model');
 exports.view = function (req, res) {
     let auctionId = req.params.id;
 
-    Photos.getPhotoByAuctionId(auctionId, function (data) {
-        if (typeof data !== "undefined") {
-            res.statusMessage = "OK";
-            res.status(200);
-            res.contentType('png');
-            res.end(data, 'binary');
-        } else {
+    Auctions.getFullAuctionInfo(auctionId, function (auction) {
+        if (typeof auction === "undefined") {
             res.statusMessage = "Not found";
             res.status(404)
                 .send();
+        } else {
+            Photos.getPhotoByAuctionId(auctionId, function (data) {
+                if (typeof data === "undefined") {
+                    res.statusMessage = "Internal server error";
+                    res.status(500)
+                        .send();
+                } else {
+                    res.statusMessage = "OK";
+                    res.status(200);
+                    res.contentType('png');
+                    res.end(data, 'binary');
+                }
+            });
         }
     });
 };

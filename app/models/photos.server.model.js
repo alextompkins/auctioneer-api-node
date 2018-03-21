@@ -21,17 +21,16 @@ function getPhotoInfoByAuctionId(auctionId, done) {
 exports.getPhotoByAuctionId = function (auctionId, done) {
     getPhotoInfoByAuctionId(auctionId, function (photoInfo) {
         if (typeof photoInfo === "undefined") {
-            return done();
-        } else {
-            fs.readFile(photoInfo.photo_image_URI)
-                .then(function (image) {
-                    return done(image);
-                })
-                .catch(function (err) {
-                    console.log(err);
-                    return done();
-                });
+            photoInfo = {"photo_image_URI": "./storage/photos/default.png"};
         }
+        fs.readFile(photoInfo.photo_image_URI)
+            .then(function (image) {
+                return done(image);
+            })
+            .catch(function (err) {
+                console.log(err);
+                return done();
+            });
     });
 };
 
