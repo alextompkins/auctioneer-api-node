@@ -4,11 +4,12 @@ const Auctions = require('../models/auctions.server.model');
 exports.view = function (req, res) {
     let auctionId = req.params.id;
 
-    Photos.getPhotoByAuctionId(auctionId, function (result) {
-        if (typeof result !== "undefined") {
+    Photos.getPhotoByAuctionId(auctionId, function (data) {
+        if (typeof data !== "undefined") {
             res.statusMessage = "OK";
-            res.status(200)
-                .send(result);
+            res.status(200);
+            res.contentType('png');
+            res.end(data, 'binary');
         } else {
             res.statusMessage = "Not found";
             res.status(404)
