@@ -158,6 +158,9 @@ exports.getAllAuctionInfo = function (params, done) {
             for (let row of rows) {
                 row.startDateTime = row.startDateTime.getTime();
                 row.endDateTime = row.endDateTime.getTime();
+                if (typeof row.currentBid !== "undefined" && row.currentBid === null) {
+                    row.currentBid = 0;
+                }
             }
             return done(rows);
         })

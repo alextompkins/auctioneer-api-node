@@ -143,8 +143,14 @@ exports.makeBid = function (req, res) {
             res.statusMessage = "Bad request - the auction has ended.";
             res.status(400)
                 .send();
-        } else if (amount <= auction.highestBid) {
+        } else if (amount <= auction.currentBid) {
             res.statusMessage = "Bad request - you cannot make a bid that is not higher than the current bid.";
+            res.status(400)
+                .send();
+        } else if (amount < auction.startingBid) {
+            res.statusMessage = "Bad request - you cannot make a bid that is lower than the starting bid.";
+            res.status(400)
+                .send();
         } else {
             let values = [
                 userId,
