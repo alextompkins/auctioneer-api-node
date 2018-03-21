@@ -236,6 +236,6 @@ exports.createBidOnAuction = function (values, done) {
         })
         .catch(function (err) {
             console.log(err);
-            return done(false);
+            return done();
         });
 };

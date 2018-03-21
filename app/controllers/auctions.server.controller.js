@@ -31,6 +31,7 @@ exports.view = function (req, res) {
 };
 
 exports.create = function (req, res) {
+    let isValid = true;
     let values = [
         req.body.title,
         req.body.categoryId,
@@ -43,25 +44,41 @@ exports.create = function (req, res) {
         req.authorisedUserId
     ];
 
-    Auctions.create(values, function (result) {
-        if (typeof result !== "undefined") {
-            let json = {
-                "id": result
-            };
-
-            res.statusMessage = "OK";
-            res.status(201)
-                .json(json);
-        } else {
-            res.statusMessage = "Bad request.";
-            res.status(400)
-                .send();
+    for (let value of values) {
+        if ((typeof value === "undefined") ||
+            (typeof value === "string" && value === "") ||
+            (typeof value === "number" && value < 0)
+        ) {
+            isValid = false;
         }
-    });
+    }
+
+    if (!isValid) {
+        res.statusMessage = "Malformed request.";
+        res.status(400)
+            .send();
+    } else {
+        Auctions.create(values, function (result) {
+            if (typeof result !== "undefined") {
+                let json = {
+                    "id": result
+                };
+
+                res.statusMessage = "OK";
+                res.status(201)
+                    .json(json);
+            } else {
+                res.statusMessage = "Bad request.";
+                res.status(400)
+                    .send();
+            }
+        });
+    }
 };
 
 exports.edit = function (req, res) {
     let id = req.params.id;
+    let isValid = true;
 
     let changes = {
         "auction_categoryid": req.body.categoryId,
@@ -75,6 +92,17 @@ exports.edit = function (req, res) {
         "auction_startingprice": req.body.startingBid
     };
 
+    if (isNaN(parseInt(id)) || parseInt(id) < 0) {
+        isValid = false;
+    }
+    for (let change of Object.keys(changes)) {
+        if ((typeof changes[change] === "string" && changes[change] === "") ||
+            (typeof changes[change] === "number" && changes[change] < 0)
+        ) {
+            isValid = false;
+        }
+    }
+
     Auctions.getFullAuctionInfo(id, function (auction) {
         if (typeof auction === "undefined") {
             res.statusMessage = "Not found.";
@@ -83,6 +111,10 @@ exports.edit = function (req, res) {
         } else if (auction.seller.id !== parseInt(req.authorisedUserId)) {
             res.statusMessage = "Unauthorized.";
             res.status(401)
+                .send();
+        } else if (!isValid) {
+            res.statusMessage = "Malformed request.";
+            res.status(400)
                 .send();
         } else if (new Date() > auction.startDateTime) {
             res.statusMessage = "Forbidden - bidding has begun on the auction.";

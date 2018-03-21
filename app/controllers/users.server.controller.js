@@ -1,6 +1,7 @@
 const Users = require('../models/users.server.model');
 
 exports.create = function (req, res) {
+    let isValid = true;
     let values = [
         req.body.username,
         req.body.givenName,
@@ -9,21 +10,35 @@ exports.create = function (req, res) {
         req.body.password
     ];
 
-    Users.create(values, function (result) {
-        if (typeof result !== "undefined") {
-            let json = {
-                "id": result
-            };
-
-            res.statusMessage = "OK";
-            res.status(201)
-                .json(json);
-        } else {
-            res.statusMessage = "Malformed request";
-            res.status(400)
-                .send();
+    for (let value of values) {
+        if ((typeof value === "undefined") ||
+            (typeof value === "string" && value === "")
+        ) {
+            isValid = false;
         }
-    });
+    }
+
+    if (!isValid) {
+        res.statusMessage = "Malformed request.";
+        res.status(400)
+            .send();
+    } else {
+        Users.create(values, function (result) {
+            if (typeof result !== "undefined") {
+                let json = {
+                    "id": result
+                };
+
+                res.statusMessage = "OK";
+                res.status(201)
+                    .json(json);
+            } else {
+                res.statusMessage = "Internal server error";
+                res.status(500)
+                    .send();
+            }
+        });
+    }
 };
 
 exports.login = function (req, res) {
@@ -86,26 +101,55 @@ exports.view = function (req, res) {
 
 exports.change = function (req, res) {
     let id =  req.params.id;
-    let changes = req.body;
+    let isValid = true;
+
+    let changes = {
+        "user_username": req.body.username,
+        "user_password": req.body.password,
+        "user_givenname": req.body.givenName,
+        "user_familyname": req.body.familyName,
+        "user_email": req.body.email
+    };
+
+    if (isNaN(parseInt(id)) || parseInt(id) < 0) {
+        isValid = false;
+    }
+    for (let change of Object.keys(changes)) {
+        if (typeof changes[change] === "string" && changes[change] === "") {
+            isValid = false;
+        }
+    }
 
     if (id !== req.authorisedUserId) {
         res.statusMessage = "Unauthorized";
         res.status(401)
             .send();
+    } else if (!isValid) {
+        res.statusMessage = "Malformed request";
+        res.status(400)
+            .send();
     } else {
-        Users.change(id, changes, function (result) {
-            if (result === true) {
-                res.statusMessage = "OK";
-                res.status(201)
-                    .send();
-            } else if (result === false) {
-                res.statusMessage = "Malformed request";
+        Users.findByUsernameOrEmail(changes.user_username, changes.user_email, function (foundUser) {
+            if (typeof foundUser !== "undefined") {
+                res.statusMessage = "Bad request - a user already exists with that username/email.";
                 res.status(400)
-                    .send();
+                    .send()
             } else {
-                res.statusMessage = "Internal server error";
-                res.status(500)
-                    .send();
+                Users.change(id, changes, function (result) {
+                    if (result === true) {
+                        res.statusMessage = "OK";
+                        res.status(201)
+                            .send();
+                    } else if (result === false) {
+                        res.statusMessage = "Malformed request - no changes to the user were provided.";
+                        res.status(400)
+                            .send();
+                    } else {
+                        res.statusMessage = "Internal server error";
+                        res.status(500)
+                            .send();
+                    }
+                });
             }
         });
     }

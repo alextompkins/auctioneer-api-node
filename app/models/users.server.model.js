@@ -16,11 +16,23 @@ exports.create = function(values, done) {
 };
 
 exports.findByUsernameOrEmail = function (username, email, done) {
-    const findSQL = "SELECT * FROM view_auction_user WHERE username = ? OR email = ?";
+    const findSQL = "SELECT * FROM auction_user WHERE user_username = ? OR user_email = ?";
 
     db.get_pool().query(findSQL, [username, email])
         .then(function (rows) {
-            return done(rows[0]);
+            let userData = rows[0];
+            if (typeof userData === "undefined") {
+                return done();
+            } else {
+                let user = {
+                    "userId": userData.user_id,
+                    "username": userData.user_username,
+                    "givenName": userData.user_givenname,
+                    "familyName": userData.user_familyname,
+                    "password": userData.user_password
+                };
+                return done(user);
+            }
         })
         .catch(function (err) {
             console.log(err);
@@ -29,7 +41,7 @@ exports.findByUsernameOrEmail = function (username, email, done) {
 };
 
 exports.login = function (id, done) {
-    const loginSQL = "UPDATE view_auction_user SET token = ? WHERE userId = ?";
+    const loginSQL = "UPDATE auction_user SET user_token = ? WHERE user_id = ?";
 
     let token = randtoken.generate(32);
 
@@ -44,7 +56,7 @@ exports.login = function (id, done) {
 };
 
 exports.logout = function (id, done) {
-    const logoutSQL = "UPDATE view_auction_user SET token = NULL WHERE userId = ?";
+    const logoutSQL = "UPDATE auction_user SET user_token = NULL WHERE user_id = ?";
 
     db.get_pool().query(logoutSQL, id)
         .then(function () {
@@ -57,7 +69,7 @@ exports.logout = function (id, done) {
 };
 
 exports.findById = function (id, isCurrentUser, done) {
-	const viewSQL = "SELECT * FROM view_auction_user WHERE userId = ?";
+	const viewSQL = "SELECT * FROM auction_user WHERE user_id = ?";
 
 	db.get_pool().query(viewSQL, id)
 		.then(function (rows) {
@@ -67,13 +79,13 @@ exports.findById = function (id, isCurrentUser, done) {
 
 			let userData = rows[0];
 			let user = {
-                "username": userData.username,
-                "givenName": userData.givenName,
-                "familyName": userData.familyName,
+                "username": userData.user_username,
+                "givenName": userData.user_givenname,
+                "familyName": userData.user_familyname,
             };
 			if (isCurrentUser) {
-			    user.email = userData.email;
-			    user.accountBalance = userData.accountBalance;
+			    user.email = userData.user_email;
+			    user.accountBalance = userData.user_accountbalance;
 			}
 
 			return done(user);
@@ -86,7 +98,7 @@ exports.findById = function (id, isCurrentUser, done) {
 
 function buildUpdateUserSQL(id, params) {
     const PROPERTIES = [
-        "username", "password", "givenName", "familyName", "email"
+        "user_username", "user_password", "user_givenname", "user_familyname", "user_email"
     ];
 
     let changes = [];
@@ -97,10 +109,10 @@ function buildUpdateUserSQL(id, params) {
         }
     }
 
-    if (changes.length === 0 || Object.keys(params).length > 0) {
+    if (changes.length === 0) {
         return "";
     } else {
-        return "UPDATE view_auction_user SET " + changes.join(', ') + " WHERE userId = " + id;
+        return "UPDATE auction_user SET " + changes.join(', ') + " WHERE user_id = " + id;
     }
 }
 
