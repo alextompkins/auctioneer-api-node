@@ -139,6 +139,10 @@ exports.makeBid = function (req, res) {
             res.statusMessage = "Bad request - you cannot bid on your own auction.";
             res.status(400)
                 .send();
+        } else if (new Date() < auction.startDateTime) {
+            res.statusMessage = "Bad request - the auction has not yet started.";
+            res.status(400)
+                .send();
         } else if (new Date() >= auction.endDateTime) {
             res.statusMessage = "Bad request - the auction has ended.";
             res.status(400)

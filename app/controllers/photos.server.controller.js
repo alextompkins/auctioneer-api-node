@@ -40,6 +40,10 @@ exports.add = function (req, res) {
             res.statusMessage = "Unauthorized.";
             res.status(401)
                 .send();
+        } else if (new Date() > auction.startDateTime) {
+            res.statusMessage = "Forbidden - bidding has begun on the auction.";
+            res.status(403)
+                .send();
         } else {
             Photos.addPhotoByAuctionId(auctionId, image, function (result) {
                 if (result === true) {
@@ -68,6 +72,10 @@ exports.remove = function (req, res) {
         } else if (auction.seller.id !== userId) {
             res.statusMessage = "Unauthorized.";
             res.status(401)
+                .send();
+        } else if (new Date() > auction.startDateTime) {
+            res.statusMessage = "Forbidden - bidding has begun on the auction.";
+            res.status(403)
                 .send();
         } else {
             Photos.deletePhotoByAuctionId(auctionId, function (result) {
