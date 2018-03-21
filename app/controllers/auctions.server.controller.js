@@ -109,17 +109,17 @@ exports.edit = function (req, res) {
 };
 
 exports.viewBids = function (req, res) {
-    let bidId = req.params.id;
+    let auctionId = req.params.id;
 
-    Auctions.getBidsByAuctionId(bidId, function (results) {
-        if (typeof results !== "undefined") {
-            res.statusMessage = "OK";
-            res.status(200)
-                .json(results);
-        } else {
+    Auctions.getFullAuctionInfo(auctionId, function (result) {
+        if (typeof result === "undefined") {
             res.statusMessage = "Not found";
             res.status(404)
                 .send();
+        } else {
+            res.statusMessage = "OK";
+            res.status(200)
+                .json(result.bids);
         }
     });
 };
