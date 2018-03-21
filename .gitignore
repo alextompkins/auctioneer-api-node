@@ -27,4 +27,4 @@ typings/
 .env
 
 # Custom
-storage/
+storage/photos/*.png
