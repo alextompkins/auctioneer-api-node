@@ -137,11 +137,15 @@ function buildSearchSQL(params) {
     if (typeof params.count !== "undefined") {
         searchSQL += "\nLIMIT ? ";
         values.push(parseInt(params.count));
+    }
 
-        if (typeof params.startIndex !== "undefined") {
-            searchSQL += "\nOFFSET ? ";
-            values.push(parseInt(params.startIndex));
+    if (typeof params.startIndex !== "undefined") {
+        if (typeof params.count === "undefined") {
+            searchSQL += "\nLIMIT ? ";
+            values.push(1000000000);
         }
+        searchSQL += "\nOFFSET ? ";
+        values.push(parseInt(params.startIndex));
     }
 
     return {

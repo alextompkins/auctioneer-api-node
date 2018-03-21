@@ -28,3 +28,4 @@ typings/
 
 # Custom
 storage/photos/*.png
+!/storage/photos/default.png

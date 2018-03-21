@@ -10,8 +10,7 @@ exports.create_pool = function(done) {
         host: "HOST",
         user: "USERNAME",
         password: "PASSWORD",
-        database: "DATABASE",
-        timezone: 'utc'
+        database: "DATABASE"
     });
     done();
 };
