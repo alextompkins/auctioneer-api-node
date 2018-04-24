@@ -57,6 +57,14 @@ exports.create = function (req, res) {
         res.statusMessage = "Malformed request.";
         res.status(400)
             .send();
+    } else if (req.body.startDateTime < Date.now()) {
+        res.statusMessage = "Malformed request - startDateTime must be after current datetime.";
+        res.status(400)
+            .send();
+    } else if (req.body.endDateTime < req.body.startDateTime) {
+        res.statusMessage = "Malformed request - endDateTime must be after startDateTime";
+        res.status(400)
+            .send();
     } else {
         Auctions.create(values, function (result) {
             if (typeof result !== "undefined") {
