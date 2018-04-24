@@ -1,5 +1,9 @@
 const Users = require('../models/users.server.model');
 
+function isValidEmail(email) {
+    return email.includes("@")
+}
+
 exports.create = function (req, res) {
     let isValid = true;
     let values = [
@@ -16,6 +20,9 @@ exports.create = function (req, res) {
         ) {
             isValid = false;
         }
+    }
+    if (!isValidEmail(req.body.email)) {
+        isValid = false
     }
 
     if (!isValid) {
