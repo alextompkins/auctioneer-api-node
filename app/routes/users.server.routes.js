@@ -12,6 +12,6 @@ module.exports = function (app) {
         .post(authorise.loginRequired, users.logout);
 
     app.route(app.rootUrl + '/users/:id')
-        .get(authorise.setAuthorisedUser, users.view)
+        .get(authorise.loginRequired, users.view)
         .patch(authorise.loginRequired, users.change);
 };
