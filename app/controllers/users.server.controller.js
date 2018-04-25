@@ -1,4 +1,6 @@
 const Users = require('../models/users.server.model');
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 10;
 
 function isValidEmail(email) {
     return email.includes("@")
@@ -30,46 +32,68 @@ exports.create = function (req, res) {
         res.status(400)
             .send();
     } else {
-        Users.create(values, function (result) {
-            if (typeof result !== "undefined") {
-                let json = {
-                    "id": result
-                };
+        let password = values.pop();
 
-                res.statusMessage = "OK";
-                res.status(201)
-                    .json(json);
-            } else {
-                res.statusMessage = "Internal server error";
-                res.status(500)
-                    .send();
-            }
-        });
+        bcrypt.hash(password, SALT_ROUNDS)
+            .then(function (hash) {
+                values.push(hash);
+                Users.create(values, function (result) {
+                    if (typeof result === "undefined") {
+                        res.statusMessage = "Internal server error";
+                        res.status(500)
+                            .send();
+                    } else {
+                        let json = {
+                            "id": result
+                        };
+
+                        res.statusMessage = "OK";
+                        res.status(201)
+                            .json(json);
+                    }
+                });
+            });
     }
 };
 
 exports.login = function (req, res) {
-    let id;
-
-    Users.findByUsernameOrEmail(req.query.username, req.query.email, function (result) {
-        if (typeof result === "undefined" || result.password !== req.query.password) {
-            res.statusMessage = "Invalid username/email/password supplied";
-            res.status(400)
-                .send();
-        } else {
-            id = result.userId;
-            Users.login(id, function (result) {
-                if (typeof result === "undefined") {
-                    res.statusMessage = "Internal server error";
-                    res.status(500)
-                        .send();
+    new Promise(function (resolve, reject) {
+        Users.findByUsernameOrEmail(req.query.username, req.query.email, function (foundUser) {
+            if (typeof foundUser === "undefined") {
+                reject(new Error("No user could be found with the given username/email."));
+            } else {
+                resolve(foundUser);
+            }
+        });
+    })
+    .then(function (foundUser) {
+        return bcrypt.compare(req.query.password, foundUser.password)
+            .then(function (isCorrect) {
+                if (isCorrect) {
+                    Users.login(foundUser.userId, function (loginResult) {
+                        if (typeof loginResult === "undefined") {
+                            res.statusMessage = "Internal server error";
+                            res.status(500)
+                                .send();
+                        } else {
+                            res.statusMessage = "OK";
+                            res.status(200)
+                                .json(loginResult);
+                        }
+                    });
                 } else {
-                    res.statusMessage = "OK";
-                    res.status(200)
-                        .json(result);
+                    throw Error("Passwords do not match.");
                 }
+            })
+            .catch(function (err) {
+                throw err;
             });
-        }
+    })
+    .catch(function (err) {
+        console.log(err);
+        res.statusMessage = "Invalid username/email/password supplied";
+        res.status(400)
+            .send();
     });
 };
 
