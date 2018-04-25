@@ -10,7 +10,7 @@ exports.create = function(values, done) {
             return done(result.insertId);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -35,7 +35,7 @@ exports.findByUsernameOrEmail = function (username, email, done) {
             }
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -50,7 +50,7 @@ exports.login = function (id, done) {
             return done({"id": id, "token": token});
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -63,7 +63,7 @@ exports.logout = function (id, done) {
             return done(true);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done(false);
         })
 };
@@ -91,7 +91,7 @@ exports.findById = function (id, isCurrentUser, done) {
 			return done(user);
 		})
 		.catch(function (err) {
-			console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
 			return done();
 		});
 };
@@ -127,7 +127,7 @@ exports.change = function (id, changes, done) {
             return done(true);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };

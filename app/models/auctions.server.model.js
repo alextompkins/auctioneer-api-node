@@ -18,7 +18,7 @@ exports.getBidsByAuctionId = function (id, done) {
             return done(newRows);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -70,7 +70,7 @@ exports.getFullAuctionInfo = function (id, done) {
             }
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -169,7 +169,7 @@ exports.getAllAuctionInfo = function (params, done) {
             return done(rows);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -184,7 +184,7 @@ exports.create = function (values, done) {
             return done(result.insertId);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -221,7 +221,7 @@ exports.change = function (id, changes, done) {
             return done(true);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };
@@ -235,7 +235,7 @@ exports.createBidOnAuction = function (values, done) {
             return done(true);
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 };

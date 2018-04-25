@@ -13,7 +13,7 @@ function getPhotoInfoByAuctionId(auctionId, done) {
             }
         })
         .catch(function (err) {
-            console.log(err);
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
             return done();
         });
 }
