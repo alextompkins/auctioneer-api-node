@@ -7,10 +7,10 @@ let state = {
 exports.create_pool = function(done) {
     state.pool = mysql.createPool({
         multipleStatements: true,
-        host: "HOST",
-        user: "USERNAME",
-        password: "PASSWORD",
-        database: "DATABASE"
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_DATABASE
     });
     done();
 };
