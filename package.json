@@ -1,15 +1,16 @@
 {
-  "name": "SENG365-Auction-Site-API",
+  "name": "Auctioneer-API-Node",
   "description": "A simple auction site API.",
-  "homepage": "https://eng-git.canterbury.ac.nz/seng365-2018/ato47",
+  "homepage": "https://github.com/alextompkins/auctioneer-api-node",
   "keywords": [
+    "auctioneer",
     "auction",
     "application",
     "api"
   ],
-  "author": "Alex Tompkins <ato47@uclive.ac.nz>",
+  "author": "Alex Tompkins <alextompkins3@gmail.com>",
   "main": "server.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "start": "node server.js"
   },
