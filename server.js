@@ -1,7 +1,7 @@
 const db = require('./config/db');
 const express = require('./config/express');
 const app = express();
-const port = 4941;
+const port = process.env.PORT || 5000;
 
 // Test connection to MySQL on start-up
 new Promise(
