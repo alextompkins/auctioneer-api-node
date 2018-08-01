@@ -221,3 +221,17 @@ exports.makeBid = function (req, res) {
         }
     });
 };
+
+exports.getCategories = function (req, res) {
+    Auctions.getAllCategories(function (result) {
+        if (typeof result === "undefined") {
+            res.statusMessage = "Internal server error";
+            res.status(500)
+                .send();
+        } else {
+            res.statusMessage = "OK";
+            res.status(200)
+                .json(result);
+        }
+    })
+};

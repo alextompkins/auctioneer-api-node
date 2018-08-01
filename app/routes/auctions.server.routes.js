@@ -13,4 +13,7 @@ module.exports = function (app) {
     app.route(app.rootUrl + '/auctions/:id/bids')
         .get(auctions.viewBids)
         .post(authorise.loginRequired, auctions.makeBid);
+
+    app.route(app.rootUrl + '/categories')
+        .get(auctions.getCategories)
 };

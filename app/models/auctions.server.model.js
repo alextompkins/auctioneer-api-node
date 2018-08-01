@@ -239,3 +239,15 @@ exports.createBidOnAuction = function (values, done) {
             return done();
         });
 };
+
+exports.getAllCategories = function (done) {
+    db.get_pool().query("SELECT category_id AS categoryId, category_title AS categoryTitle, " +
+        "category_description AS categoryDescription FROM category")
+        .then(function (result) {
+            return done(result);
+        })
+        .catch(function (err) {
+            console.log("An error occurred when executing: \n" + err.sql + "\nERROR: " + err.sqlMessage + "\n");
+            return done();
+        });
+};
