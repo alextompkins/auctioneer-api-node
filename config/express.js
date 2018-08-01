@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 
 const allowCrossOriginRequests = function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-Authorization");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
     next();
 };
 
