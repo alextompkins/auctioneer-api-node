@@ -7,7 +7,7 @@ module.exports = function (app) {
         .post(users.create);
 
     app.route(app.rootUrl + '/users/login')
-        .post(bodyParser.urlencoded(), users.login);
+        .post(bodyParser.urlencoded({ extended: false }), users.login);
 
     app.route(app.rootUrl + '/users/logout')
         .post(authorise.loginRequired, users.logout);
