@@ -58,7 +58,7 @@ exports.create = function (req, res) {
 
 exports.login = function (req, res) {
     new Promise(function (resolve, reject) {
-        Users.findByUsernameOrEmail(req.query.username, req.query.email, function (foundUser) {
+        Users.findByUsernameOrEmail(req.body.username, req.body.email, function (foundUser) {
             if (typeof foundUser === "undefined") {
                 reject(new Error("No user could be found with the given username/email."));
             } else {
@@ -67,7 +67,7 @@ exports.login = function (req, res) {
         });
     })
     .then(function (foundUser) {
-        return bcrypt.compare(req.query.password, foundUser.password)
+        return bcrypt.compare(req.body.password, foundUser.password)
             .then(function (isCorrect) {
                 if (isCorrect) {
                     Users.login(foundUser.userId, function (loginResult) {
