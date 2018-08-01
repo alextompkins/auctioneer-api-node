@@ -1,12 +1,13 @@
 const users = require('../controllers/users.server.controller');
 const authorise = require('../middleware/authorise');
+const bodyParser = require('body-parser');
 
 module.exports = function (app) {
     app.route(app.rootUrl + '/users')
         .post(users.create);
 
     app.route(app.rootUrl + '/users/login')
-        .post(users.login);
+        .post(bodyParser.urlencoded(), users.login);
 
     app.route(app.rootUrl + '/users/logout')
         .post(authorise.loginRequired, users.logout);
