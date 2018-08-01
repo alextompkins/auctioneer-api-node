@@ -131,6 +131,24 @@ function buildSearchSQL(params) {
         values.push(parseInt(params.winner));
     }
 
+    switch (params.status) {
+        case "upcoming":
+            conditions.push("\nauction_startingdate > CURRENT_TIMESTAMP()");
+            break;
+        case "active":
+            conditions.push("\nauction_startingdate <= CURRENT_TIMESTAMP() " +
+                "\nAND auction_endingdate > CURRENT_TIMESTAMP()");
+            break;
+        case "expired":
+            conditions.push("\nauction_endingdate <= CURRENT_TIMESTAMP() " +
+                "\nAND (bid_amount < auction_reserveprice OR bid_amount IS NULL)");
+            break;
+        case "won":
+            conditions.push("\nauction_endingdate <= CURRENT_TIMESTAMP() " +
+                "\nAND bid_amount >= auction_reserveprice");
+            break;
+    }
+
     searchSQL += (conditions.length ? conditions.join(" AND ") : 1);
     searchSQL += "\nGROUP BY auction_id \nORDER BY auction_startingdate DESC";
 
